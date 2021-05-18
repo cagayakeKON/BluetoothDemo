@@ -2,6 +2,7 @@ package com.cagayake.bluetoothgraphics.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothSocket
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -20,14 +21,16 @@ class BluetoothDataTranslate  {
     private fun loopRead(socket: BluetoothSocket?) {
         mSocket = socket
         try {
-            if (mSocket?.isConnected == true) mSocket?.connect()
+            if (!mSocket!!.isConnected) {
+                mSocket?.connect()}
+
             mOut = DataOutputStream(mSocket?.outputStream)
-            val `in` = DataInputStream(mSocket?.inputStream)
+            val inputStream = DataInputStream(mSocket?.inputStream)
             isRead = true
             while (isRead) {
-                when (`in`.readInt()) {
+                when (inputStream.readInt()) {
                     FLAG_MSG -> {
-                        val msg: String = `in`.readUTF()
+                        val msg: String = inputStream.readUTF()
                         print(msg)
                     }
                 }
@@ -41,11 +44,11 @@ class BluetoothDataTranslate  {
 
     fun connect(dev: BluetoothDevice) {
         try {
-            val socket = dev.createRfcommSocketToServiceRecord(PP_UUID) //明文传输(不安全)，无需配对
+            val socket = dev.createInsecureRfcommSocketToServiceRecord(PP_UUID)
             // 开启子线程
             Thread {
                 loopRead(socket) // 循环读取
-            }
+            }.start()
         } catch (e: Throwable) {
             e.printStackTrace()
             isRead = false;
