@@ -1,6 +1,9 @@
 package com.cagayake.bluetoothgraphics
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -11,11 +14,18 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.cagayake.bluetoothgraphics.bluetooth.BluetoothDataTranslate
 import com.cagayake.bluetoothgraphics.databinding.ActivityMainBinding
 import com.cagayake.bluetoothgraphics.pojo.GraphicData
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
+import com.orhanobut.dialogplus.DialogPlus
+import com.orhanobut.dialogplus.DialogPlusBuilder
+import com.orhanobut.dialogplus.OnClickListener
+import com.orhanobut.dialogplus.OnItemClickListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var bluetoothDataTranslate: BluetoothDataTranslate
+    private lateinit var dialog:DialogPlusBuilder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +47,22 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+        dialog = DialogPlus.newDialog(this);
+        binding.fab.setOnClickListener {
+            bluetoothDataTranslate = BluetoothDataTranslate()
+            checkAndEnableBlueTooth()
+            val deviceList = bluetoothDataTranslate.getBlueToothDevice()
+            val adapter = ArrayAdapter<BluetoothDevice>(this,R.layout.support_simple_spinner_dropdown_item,deviceList);
+            val dialogPlus = dialog.setAdapter(adapter).setOnItemClickListener{
+                dialogPlus,item,view,posion->
+                run {
+                    Toast.makeText(this,"start",Toast.LENGTH_SHORT).show()
+                    bluetoothDataTranslate.connect(item as BluetoothDevice)
+                    dialogPlus.dismiss()
+                }
+            }.setExpanded(true).create()
+            dialogPlus.show()
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
         }
     }
 
@@ -76,5 +100,19 @@ class MainActivity : AppCompatActivity() {
                 break
             }
         }
+    }
+
+    private fun checkAndEnableBlueTooth(){
+        val adapter = BluetoothAdapter.getDefaultAdapter()
+        if (adapter ==null){
+            Toast.makeText(this,"本机没有找到蓝牙硬件或驱动",Toast.LENGTH_SHORT).show()
+        }else{
+            if (!adapter.isEnabled){
+                Toast.makeText(this,"请打开蓝牙",Toast.LENGTH_SHORT).show()
+                startActivityForResult( Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 112)
+
+            }
+        }
+
     }
 }
