@@ -38,8 +38,8 @@ class BluetoothDataTranslate  {
             }
         } catch (e: Throwable) {
            e.printStackTrace()
-            isRead = false;
-            mSocket?.close();
+            isRead = false
+            mSocket?.close()
         }
     }
 

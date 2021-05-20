@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.navigation.fragment.findNavController
 import com.cagayake.bluetoothgraphics.databinding.FragmentGraphicsBinding
@@ -31,7 +32,7 @@ class GraphicsFragment : Fragment() {
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentGraphicsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -42,15 +43,21 @@ class GraphicsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         RxBus.toObservable(String::class.java).subscribe {
-            data.add(GraphicData(LocalDateTime.now().second,it.toInt()))
-            val dataEntry:ArrayList<Entry> = ArrayList()
-            for (item in data){
-                dataEntry.add(Entry(item.x,item.y))
+            try {
+                data.add(GraphicData((LocalDateTime.now().minute+LocalDateTime.now().second+LocalDateTime.now().hour).toFloat(),it.toFloat()))
+                val dataEntry:ArrayList<Entry> = ArrayList()
+                for (item in data){
+                    dataEntry.add(Entry(item.x,item.y))
+                }
+                val dataSet = LineDataSet(dataEntry,"血压曲线");
+                val lineData = LineData(dataSet);
+                binding.lineChart.data = lineData
+                binding.lineChart.invalidate()
+            }catch (e:Exception) {
+                e.printStackTrace()
             }
-            val dataSet = LineDataSet(dataEntry,"Graphic");
-            val lineData = LineData(dataSet);
-            binding.lineChart.data = lineData
-            binding.lineChart.invalidate()
+
+
         }
     }
 
