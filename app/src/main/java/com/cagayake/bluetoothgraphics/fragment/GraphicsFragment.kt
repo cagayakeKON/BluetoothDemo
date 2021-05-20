@@ -28,6 +28,7 @@ class GraphicsFragment : Fragment() {
     private var _binding: FragmentGraphicsBinding? = null
     private val binding get() = _binding!!
     private val data:LinkedList<GraphicData> = LinkedList()
+    private var xData = 0
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +45,8 @@ class GraphicsFragment : Fragment() {
 
         RxBus.toObservable(String::class.java).subscribe {
             try {
-                data.add(GraphicData((LocalDateTime.now().minute+LocalDateTime.now().second+LocalDateTime.now().hour).toFloat(),it.toFloat()))
+                xData++
+                data.add(GraphicData(xData.toFloat(),it.toFloat()))
                 val dataEntry:ArrayList<Entry> = ArrayList()
                 for (item in data){
                     dataEntry.add(Entry(item.x,item.y))
