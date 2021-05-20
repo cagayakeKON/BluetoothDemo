@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var bluetoothDataTranslate: BluetoothDataTranslate
     private lateinit var dialog:DialogPlusBuilder
-    private var isConnected = false
     private lateinit var deviceList: MutableList<BluetoothDevice>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener {
             bluetoothDataTranslate = BluetoothDataTranslate()
             checkAndEnableBlueTooth()
-            val deviceList = bluetoothDataTranslate.getBlueToothDevice()
+            deviceList = bluetoothDataTranslate.getBlueToothDevice()
             val adapter = ArrayAdapter<BluetoothDevice>(this,R.layout.support_simple_spinner_dropdown_item,deviceList);
             val dialogPlus = dialog.setAdapter(adapter).setOnItemClickListener{
                 dialogPlus,item,view,posion->

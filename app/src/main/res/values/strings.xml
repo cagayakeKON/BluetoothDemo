@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">BluetoothGraphics</string>
-    <string name="action_settings">log()</string>
+    <string name="action_settings">log</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">BluetoothGraphics</string>
     <string name="next">Next</string>

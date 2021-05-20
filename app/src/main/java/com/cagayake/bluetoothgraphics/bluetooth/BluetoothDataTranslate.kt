@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothSocket
+import com.cagayake.bluetoothgraphics.rxbus.RxBus
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.util.*
@@ -31,7 +32,7 @@ class BluetoothDataTranslate  {
                 when (inputStream.readInt()) {
                     FLAG_MSG -> {
                         val msg: String = inputStream.readUTF()
-                        print(msg)
+                        RxBus.post(msg)
                     }
                 }
             }
